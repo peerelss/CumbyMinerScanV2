@@ -33,7 +33,7 @@ public class MinerHelper
 
         if (!isOnline)
         {
-            return new MinerDetail(ip, "offline", 0f, 0f, "设备不在线", "");
+            return new MinerDetail(ip, "offline", 0f, 0f, 0,"offline","设备不在线");
         }
         else
         {
@@ -51,18 +51,18 @@ public class MinerHelper
                 if (info.Rate5s > 0)
                 {
                     // 正常
-                    return new MinerDetail(ip, "OK", info.Rate5s, info.RateAvg, "正常运行", "正常运行");
+                    return new MinerDetail(ip, "OK", info.Rate5s, info.RateAvg, info.Elapsed,"正常运行", "正常运行");
                 }
                 else
                 {
                     if (info.FanNum < 4) //风扇问题
                     {
-                        return new MinerDetail(ip, "fans", info.Rate5s, info.RateAvg, "fans issue",
+                        return new MinerDetail(ip, "fans", info.Rate5s, info.RateAvg,info.Elapsed, "fans issue",
                             $"Fans: {string.Join(", ", info.Fans)}");
                     }
                     else if (info.ChainNum < 3) //芯片问题
                     {
-                        return new MinerDetail(ip, "chains", info.Rate5s, info.RateAvg, "chains issue",
+                        return new MinerDetail(ip, "chains", info.Rate5s, info.RateAvg, info.Elapsed,"chains issue",
                             $"ChainNum: {info.ChainNum}");
                     }
 
@@ -78,7 +78,7 @@ public class MinerHelper
                         logMemo = $"Fans: {string.Join(", ", info.Fans)}";
                     }
 
-                    return new MinerDetail(ip, "no good", info.Rate5s, info.RateAvg, logResult[0], logMemo);
+                    return new MinerDetail(ip, "no good", info.Rate5s, info.RateAvg,info.Elapsed, logResult[0], logMemo);
                 }
             }
             catch (Exception ex)
@@ -86,7 +86,7 @@ public class MinerHelper
                 Console.WriteLine($"出错: {ex.Message}");
             }
 
-            return new MinerDetail(ip, "OK", 85.3f, 90.1f, "正常运行", "模拟数据");
+            return new MinerDetail(ip, "OK", 85.3f, 90.1f, 0,"正常运行", "模拟数据");
         }
 
         // 模拟获取矿机数据

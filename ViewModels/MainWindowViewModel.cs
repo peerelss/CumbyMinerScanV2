@@ -18,10 +18,27 @@ namespace CumbyMinerScanV2.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
+    private string _issueSummary;
+
+    public string IssueSummary
+    {
+        get => _issueSummary;
+        set { _issueSummary = value; }
+    }
+
+    private string _messageText = "这里显示操作结果";
+
+    public string MessageText
+    {
+        get => _messageText;
+        set => this.RaiseAndSetIfChanged(ref _messageText, value);
+    }
+
     public ObservableCollection<MinerDetail> MinerDetails { get; } = new ObservableCollection<MinerDetail>();
     public ICommand ButtonClickCommand { get; }
     public ICommand TestCommand { get; }
     public ICommand ExportCommand { get; }
+
     public MainWindowViewModel()
     {
         ButtonClickCommand = ReactiveCommand.CreateFromTask<string>(OnButtonClicked);
@@ -30,7 +47,7 @@ public class MainWindowViewModel : ViewModelBase
             string log =
                 await HttpHelper.GetDigestProtectedResourceAsync($"http://10.11.1.5/cgi-bin/log.cgi", "root", "root",
                     "{}");
-          
+
             var logResult = LogHelper.ParseLog(log);
             Console.WriteLine(logResult[0]);
         });
@@ -55,11 +72,11 @@ public class MainWindowViewModel : ViewModelBase
                 Console.WriteLine("导出时发生异常: " + ex.Message);
             }
         });
-        
     }
 
     private async Task OnButtonClicked(string buttonName)
     {
+        MessageText = "开始扫描";
         var ips = IpRangeHelper.GetIpRanges(buttonName);
         MinerDetails.Clear();
         foreach (var ip in ips)
@@ -67,7 +84,10 @@ public class MainWindowViewModel : ViewModelBase
             var detail = await MinerHelper.IsMinerAvailable(ip);
             MinerDetails.Add(detail);
         }
+
+        UpdateIssueStatistics();
     }
+
     public static void OpenFolderAndSelectFile(string relativePath)
     {
         string fullPath = Path.GetFullPath(relativePath);
@@ -77,5 +97,18 @@ public class MainWindowViewModel : ViewModelBase
             var argument = $"/select,\"{fullPath}\"";
             Process.Start("explorer.exe", argument);
         }
+    }
+
+    public void UpdateIssueStatistics()
+    {
+        var total = MinerDetails.Count;
+        var grouped = MinerDetails
+            .GroupBy(m => m.IssueDetail)
+            .Select(g => new { Issue = g.Key, Count = g.Count() })
+            .ToList();
+
+        IssueSummary = string.Join("\n", grouped.Select(g =>
+            $"{g.Issue}: {g.Count} ({(g.Count * 100.0 / total):F1}%)"));
+        MessageText = IssueSummary;
     }
 }

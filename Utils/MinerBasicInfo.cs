@@ -8,6 +8,7 @@ public class MinerBasicInfo
     public double RateAvg { get; set; }
     public int ChainNum { get; set; }
     public int FanNum { get; set; }
+    public int Elapsed { get; set; }
     public List<int> Fans { get; set; }
 }
 
@@ -22,6 +23,7 @@ public class Stat
     public double rate_avg { get; set; }
     public int chain_num { get; set; }
     public int fan_num { get; set; }
+    public int elapsed { get; set; }
     public List<int> fan { get; set; }
 }
 
@@ -47,7 +49,8 @@ public static class MinerParser
             RateAvg = stat.rate_avg,
             ChainNum = stat.chain_num,
             FanNum = stat.fan_num,
-            Fans = stat.fan
+            Fans = stat.fan,
+            Elapsed = stat.elapsed,
         };
     }
 }

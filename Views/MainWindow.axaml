@@ -48,18 +48,21 @@
         </Style>
     </Window.Styles>
     <ScrollViewer HorizontalAlignment="Center" VerticalAlignment="Top">
-        <StackPanel Orientation="Vertical" Spacing="80" Margin="20">
-            <StackPanel Orientation="Horizontal" Spacing="80" Margin="20">
+        <StackPanel Orientation="Vertical" Margin="20">
+            <StackPanel Orientation="Horizontal" Spacing="20" Margin="20">
                 <!-- 第一列 -->
                 <StackPanel Orientation="Vertical" Spacing="5">
                     <StackPanel Orientation="Horizontal" Spacing="2">
                         <Button Content="4A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
                                 Command="{Binding ButtonClickCommand}" CommandParameter="4A" />
-                        <Button Content="4B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                        <Button Content="4B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
+                                Command="{Binding ButtonClickCommand}" CommandParameter="4B" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="2">
-                        <Button Content="3A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
-                        <Button Content="3B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                        <Button Content="3A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
+                                Command="{Binding ButtonClickCommand}" CommandParameter="3A" />
+                        <Button Content="3B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
+                                Command="{Binding ButtonClickCommand}" CommandParameter="3B" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="2">
                         <Button Content="2A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
@@ -78,19 +81,26 @@
                 <!-- 第二列 -->
                 <StackPanel Orientation="Vertical" Spacing="5">
                     <StackPanel Orientation="Horizontal" Spacing="2">
-                        <Button Content="8A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
-                        <Button Content="8B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                        <Button Content="8A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
+                                Command="{Binding ButtonClickCommand}" CommandParameter="8A" />
+                        <Button Content="8B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
+                                Command="{Binding ButtonClickCommand}" CommandParameter="8B" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="2">
-                        <Button Content="7A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
-                        <Button Content="7B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                        <Button Content="7A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
+                                Command="{Binding ButtonClickCommand}" CommandParameter="7A" />
+                        <Button Content="7B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
+                                Command="{Binding ButtonClickCommand}" CommandParameter="7B" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="2">
-                        <Button Content="6A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
-                        <Button Content="6B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                        <Button Content="6A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
+                                Command="{Binding ButtonClickCommand}" CommandParameter="6A" />
+                        <Button Content="6B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
+                                Command="{Binding ButtonClickCommand}" CommandParameter="6B" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="2">
-                        <Button Content="5A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                        <Button Content="5A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
+                                Command="{Binding ButtonClickCommand}" CommandParameter="5A" />
                         <Button Content="5B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
                                 Command="{Binding ButtonClickCommand}" CommandParameter="5B" />
                     </StackPanel>
@@ -99,12 +109,16 @@
                 <!-- 第三列 -->
                 <StackPanel Orientation="Vertical" Spacing="5">
                     <StackPanel Orientation="Horizontal" Spacing="2">
-                        <Button Content="10A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
-                        <Button Content="10B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                        <Button Content="10A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
+                                Command="{Binding ButtonClickCommand}" CommandParameter="10B" />
+                        <Button Content="10B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
+                                Command="{Binding ButtonClickCommand}" CommandParameter="10B" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="2">
-                        <Button Content="9A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
-                        <Button Content="9B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                        <Button Content="9A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
+                                Command="{Binding ButtonClickCommand}" CommandParameter="9A" />
+                        <Button Content="9B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
+                                Command="{Binding ButtonClickCommand}" CommandParameter="9B" />
                     </StackPanel>
 
                 </StackPanel>
@@ -118,7 +132,10 @@
                             Command="{Binding ExportCommand}" />
 
                 </StackPanel>
+
             </StackPanel>
+            <TextBlock Foreground="Green" FontWeight="Bold" FontSize="16" Text="{Binding MessageText}"
+                       Margin="20,0,0,5" />
             <DataGrid Margin="20" ItemsSource="{Binding MinerDetails}"
                       AutoGenerateColumns="True" IsReadOnly="True"
                       GridLinesVisibility="All"
