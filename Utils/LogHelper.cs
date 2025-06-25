@@ -5,9 +5,13 @@ namespace CumbyMinerScanV2.Utils;
 public class LogHelper
 {
     public static string ErrorFanLost = "ERROR_FAN_LOST";
-    private static string ErrorTempTooHigh = "ERROR_TEMP_TOO_HIGH";
-    private static string ErrorPowerLost = "ERROR_POWER_LOST";
-    private static string ErrorNotEnoughChain = "Not enough chain";
+    public static string ErrorTempTooHigh = "ERROR_TEMP_TOO_HIGH";
+    public static string ErrorPowerLost = "ERROR_POWER_LOST";
+    public static string ErrorNotEnoughChain = "Not enough chain";
+    public static string ErrorOffline = "Offline";
+    public static string ErrorUnknown = "Unknown";
+    public static string ErrorNetIssue = "NetIssue";
+    public static string NormalOk = "Ok";
 
     private static List<string> ErrorList =
     [

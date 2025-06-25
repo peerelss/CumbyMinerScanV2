@@ -3,7 +3,7 @@
         xmlns:vm="using:CumbyMinerScanV2.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="650"
         x:Class="CumbyMinerScanV2.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
@@ -131,8 +131,26 @@
                     <Button Content="导出日志" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="185"
                             Command="{Binding ExportCommand}" />
 
-                </StackPanel>
+                    <Button Content="点亮" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="185"
+                            Command="{Binding LightMinerCommand}" />
 
+                    <Button Content="重启" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="185"
+                            Command="{Binding RebootMinerCommand}" />
+
+                </StackPanel>
+                <Border BorderBrush="Gray" BorderThickness="1" Padding="10">
+                    <StackPanel Width="100">
+                        <TextBlock Text="实时0算力机器" Margin="0,0,0,5" />
+                        <CheckBox Content="风扇故障" IsChecked="{Binding ShowFanLost}" />
+                        <CheckBox Content="高温" IsChecked="{Binding ShowOverheat}" />
+                        <CheckBox Content="网络问题" IsChecked="{Binding ShowNetIssue}" />
+                        <CheckBox Content="掉电压" IsChecked="{Binding ShowPowerLost}" />
+                        <CheckBox Content="算力板问题" IsChecked="{Binding ShowHashBroad}" />
+                        <CheckBox Content="未知" IsChecked="{Binding ShowUnknown}" />
+                        <CheckBox Content="离线" IsChecked="{Binding ShowOffline}" />
+                        <CheckBox Content="正常机器" IsChecked="{Binding ShowOK}" />
+                    </StackPanel>
+                </Border>
             </StackPanel>
             <TextBlock Foreground="Green" FontWeight="Bold" FontSize="16" Text="{Binding MessageText}"
                        Margin="20,0,0,5" />
