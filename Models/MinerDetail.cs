@@ -4,12 +4,12 @@ public class MinerDetail
 {
     public string Ip { get; set; }
     public string Issue { get; set; }
-    public float HashRealTime { get; set; }
-    public float HashAverage { get; set; }
+    public double HashRealTime { get; set; }
+    public double HashAverage { get; set; }
     public string IssueDetail { get; set; }
     public string IssueMemo { get; set; }
 
-    public MinerDetail(string ip, string issue, float hashRealTime, float hashAverage, string issueDetail,
+    public MinerDetail(string ip, string issue, double hashRealTime, double hashAverage, string issueDetail,
         string issueMemo)
     {
         // ip

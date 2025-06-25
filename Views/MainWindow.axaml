@@ -62,8 +62,10 @@
                         <Button Content="3B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="2">
-                        <Button Content="2A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
-                        <Button Content="2B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                        <Button Content="2A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
+                                Command="{Binding ButtonClickCommand}" CommandParameter="2A" />
+                        <Button Content="2B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
+                                Command="{Binding ButtonClickCommand}" CommandParameter="2B" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="2">
                         <Button Content="1A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
@@ -104,8 +106,18 @@
                         <Button Content="9A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
                         <Button Content="9B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
                     </StackPanel>
-                </StackPanel>
 
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Spacing="5">
+
+
+                    <Button Content="测试使用" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="185"
+                            Command="{Binding TestCommand}" />
+
+                    <Button Content="导出日志" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="185"
+                            Command="{Binding ExportCommand}" />
+
+                </StackPanel>
             </StackPanel>
             <DataGrid Margin="20" ItemsSource="{Binding MinerDetails}"
                       AutoGenerateColumns="True" IsReadOnly="True"

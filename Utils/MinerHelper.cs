@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Text.Json;
+using System.Threading.Tasks;
 using CumbyMinerScanV2.Models;
 
 namespace CumbyMinerScanV2.Utils;
@@ -36,6 +37,55 @@ public class MinerHelper
         }
         else
         {
+            try
+            {
+                string json =
+                    await HttpHelper.GetDigestProtectedResourceAsync($"http://{ip}/cgi-bin/stats.cgi", "root", "root",
+                        "{}");
+                MinerBasicInfo info = MinerParser.ParseMinerInfo(json);
+                Console.WriteLine($"Rate5s: {info.Rate5s}");
+                Console.WriteLine($"RateAvg: {info.RateAvg}");
+                Console.WriteLine($"FanNum: {info.FanNum}");
+                Console.WriteLine($"Fans: {string.Join(", ", info.Fans)}");
+                Console.WriteLine($"ChainNum: {info.ChainNum}");
+                if (info.Rate5s > 0)
+                {
+                    // 正常
+                    return new MinerDetail(ip, "OK", info.Rate5s, info.RateAvg, "正常运行", "正常运行");
+                }
+                else
+                {
+                    if (info.FanNum < 4) //风扇问题
+                    {
+                        return new MinerDetail(ip, "fans", info.Rate5s, info.RateAvg, "fans issue",
+                            $"Fans: {string.Join(", ", info.Fans)}");
+                    }
+                    else if (info.ChainNum < 3) //芯片问题
+                    {
+                        return new MinerDetail(ip, "chains", info.Rate5s, info.RateAvg, "chains issue",
+                            $"ChainNum: {info.ChainNum}");
+                    }
+
+                    string log =
+                        await HttpHelper.GetDigestProtectedResourceAsync($"http://{ip}//cgi-bin/log.cgi", "root",
+                            "root",
+                            "{}");
+
+                    var logResult = LogHelper.ParseLog(log);
+                    var logMemo = logResult[1];
+                    if (LogHelper.ErrorFanLost.Equals(logResult[0]))
+                    {
+                        logMemo = $"Fans: {string.Join(", ", info.Fans)}";
+                    }
+
+                    return new MinerDetail(ip, "no good", info.Rate5s, info.RateAvg, logResult[0], logMemo);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"出错: {ex.Message}");
+            }
+
             return new MinerDetail(ip, "OK", 85.3f, 90.1f, "正常运行", "模拟数据");
         }
 

@@ -12,9 +12,10 @@ using System.Threading.Tasks;
 
 public class HttpHelper
 {
-    private static string _userName = "root";
-    private static string _userPassword = "root";
-    private static string _httpPre = "http://";
+    public static string _userName = "root";
+    public static string _userPassword = "root";
+    public static string _httpPre = "http://";
+    public static string _stats = "/cgi-bin/stats.cgi";
 
     public static async Task<string> GetDigestProtectedResourceAsync(string url, string username, string password,
         string payload)
