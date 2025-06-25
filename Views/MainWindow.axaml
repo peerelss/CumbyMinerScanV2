@@ -12,9 +12,106 @@
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainWindowViewModel/>
+        <vm:MainWindowViewModel />
     </Design.DataContext>
+    <Window.Styles>
+        <Style Selector="Button">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Background" Value="Lime" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="BorderBrush" Value="Red" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Width" Value="120" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="Padding" Value="5" />
+            <Setter Property="Margin" Value="1" />
+        </Style>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <!-- 鼠标悬停 -->
+        <Style Selector="Button:pointerover">
+            <Setter Property="Background" Value="#AAFFAA" />
+        </Style>
 
+        <!-- 按下时 -->
+        <Style Selector="Button:pressed">
+            <Setter Property="Background" Value="#66CC66" />
+        </Style>
+
+        <!-- 自定义选中类 -->
+        <Style Selector="Button.selected">
+            <Setter Property="Background" Value="LightGray" />
+            <Setter Property="Foreground" Value="Black" />
+        </Style>
+    </Window.Styles>
+    <ScrollViewer HorizontalAlignment="Center" VerticalAlignment="Top">
+        <StackPanel Orientation="Vertical" Spacing="80" Margin="20">
+            <StackPanel Orientation="Horizontal" Spacing="80" Margin="20">
+                <!-- 第一列 -->
+                <StackPanel Orientation="Vertical" Spacing="5">
+                    <StackPanel Orientation="Horizontal" Spacing="2">
+                        <Button Content="4A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
+                                Command="{Binding ButtonClickCommand}" CommandParameter="4A" />
+                        <Button Content="4B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="2">
+                        <Button Content="3A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                        <Button Content="3B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="2">
+                        <Button Content="2A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                        <Button Content="2B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="2">
+                        <Button Content="1A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
+                                Command="{Binding ButtonClickCommand}" CommandParameter="1A" />
+                        <Button Content="1B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
+                                Command="{Binding ButtonClickCommand}" CommandParameter="1B" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- 第二列 -->
+                <StackPanel Orientation="Vertical" Spacing="5">
+                    <StackPanel Orientation="Horizontal" Spacing="2">
+                        <Button Content="8A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                        <Button Content="8B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="2">
+                        <Button Content="7A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                        <Button Content="7B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="2">
+                        <Button Content="6A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                        <Button Content="6B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="2">
+                        <Button Content="5A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                        <Button Content="5B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90"
+                                Command="{Binding ButtonClickCommand}" CommandParameter="5B" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- 第三列 -->
+                <StackPanel Orientation="Vertical" Spacing="5">
+                    <StackPanel Orientation="Horizontal" Spacing="2">
+                        <Button Content="10A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                        <Button Content="10B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="2">
+                        <Button Content="9A" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                        <Button Content="9B" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="90" />
+                    </StackPanel>
+                </StackPanel>
+
+            </StackPanel>
+            <DataGrid Margin="20" ItemsSource="{Binding MinerDetails}"
+                      AutoGenerateColumns="True" IsReadOnly="True"
+                      GridLinesVisibility="All"
+                      BorderThickness="1" BorderBrush="Gray">
+            </DataGrid>
+        </StackPanel>
+    </ScrollViewer>
 </Window>
