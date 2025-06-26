@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Windows.Input;
 using CumbyMinerScan.Models;
 using CumbyMinerScanV2.Utils;
@@ -34,6 +35,7 @@ public class MainWindowViewModel : ViewModelBase
     public bool UnknownIssue { get; set; }
     public bool OfflineIssue { get; set; }
     public bool NoIssue { get; set; }
+    private bool _suppressFilterUpdates = false;
 
     public string MessageText
     {
@@ -50,6 +52,7 @@ public class MainWindowViewModel : ViewModelBase
     ///  这里记录所有矿机的原始数据
     /// </summary>
     public List<MinerDetail> OriginMinerData = new List<MinerDetail>();
+
     public ObservableCollection<IssueFilter> Filters { get; } = new();
     public ICommand ButtonClickCommand { get; }
     public ICommand TestCommand { get; }
@@ -114,6 +117,7 @@ public class MainWindowViewModel : ViewModelBase
     }
 
     private bool _showNetIssue;
+
     public bool ShowNetIssue
     {
         get => _showNetIssue;
@@ -166,22 +170,7 @@ public class MainWindowViewModel : ViewModelBase
                 Console.WriteLine("导出时发生异常: " + ex.Message);
             }
         });
-        ///
-        this.WhenAnyValue(x => x.ShowOK,
-                x => x.ShowOverheat,
-                x => x.ShowFanLost,
-                x => x.ShowNetIssue,
-                x => x.ShowOffline,
-                x => x.ShowPowerLost, 
-                x => x.ShowHashBroad)
-            .Subscribe(_ => ApplyFilter());
-
-        foreach (var filter in Filters)
-        {
-            filter.WhenAnyValue(f => f.IsChecked)
-                .Subscribe(_ => ApplyFilter());
-        }
-        ///
+        // 使用方式
         
     }
 
@@ -212,36 +201,67 @@ public class MainWindowViewModel : ViewModelBase
         }
     }
 
-    public void UpdateIssueStatistics()
+    private IEnumerable<IObservable<bool>> GetFilterProperties()
     {
-        var total = OriginMinerData.Count;
-        var grouped = MinerDetails
-            .GroupBy(m => m.IssueDetail)
-            .Select(g => new { Issue = g.Key, Count = g.Count() })
-            .ToList();
-
-        IssueSummary = string.Join("\n", grouped.Select(g =>
-            $"{g.Issue}: {g.Count} ({(g.Count * 100.0 / total):F1}%)"));
-        MessageText = IssueSummary;
+        yield return this.WhenAnyValue(x => x.ShowOK);
+        yield return this.WhenAnyValue(x => x.ShowOverheat);
+        yield return this.WhenAnyValue(x => x.ShowFanLost);
+        yield return this.WhenAnyValue(x => x.ShowNetIssue);
+        yield return this.WhenAnyValue(x => x.ShowOffline);
+        yield return this.WhenAnyValue(x => x.ShowPowerLost);
+        yield return this.WhenAnyValue(x => x.ShowHashBroad);
+        yield return this.WhenAnyValue(x => x.ShowUnknown);
     }
+
 
     private void ApplyFilter()
     {
         MinerDetails.Clear();
 
-        var selectedIssues = new List<string>();
-        if (ShowOK) selectedIssues.Add(LogHelper.NormalOk);
-        if (ShowOverheat) selectedIssues.Add(LogHelper.ErrorTempTooHigh);
-        if (ShowFanLost) selectedIssues.Add(LogHelper.ErrorFanLost);
-        if (ShowOffline) selectedIssues.Add(LogHelper.ErrorOffline);
-        if (ShowNetIssue) selectedIssues.Add(LogHelper.ErrorNetIssue);
-        if (ShowPowerLost) selectedIssues.Add(LogHelper.ErrorPowerLost);
-        if (ShowUnknown) selectedIssues.Add(LogHelper.ErrorUnknown);
-        if (ShowHashBroad) selectedIssues.Add(LogHelper.ErrorNotEnoughChain);
-        var result = OriginMinerData
-            .Where(m => selectedIssues.Contains(m.IssueDetail));
+        var selected = Filters
+            .Where(f => f.IsChecked)
+            .Select(f => f.Issue)
+            .ToHashSet();
 
-        foreach (var m in result)
-            MinerDetails.Add(m);
+        foreach (var miner in OriginMinerData.Where(m => selected.Contains(m.IssueDetail)))
+        {
+            MinerDetails.Add(miner);
+        }
+    }
+
+    public void UpdateIssueStatistics()
+    {
+        _suppressFilterUpdates = true;
+
+        var total = OriginMinerData.Count;
+        var grouped = OriginMinerData
+            .GroupBy(m => m.IssueDetail)
+            .Select(g => new { Issue = g.Key, Count = g.Count() })
+            .ToList();
+
+        Filters.Clear();
+        foreach (var group in grouped)
+        {
+            var filter = new IssueFilter
+            {
+                Issue = group.Issue,
+                Label = $"{group.Issue}: {group.Count} 台 ({(group.Count * 100.0 / total):F1}%)",
+                IsChecked = true // 默认全部勾选
+            };
+
+            // 监听 CheckBox 的变化来触发过滤
+            filter.WhenAnyValue(f => f.IsChecked)
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(_ =>
+                {
+                    if (!_suppressFilterUpdates) ApplyFilter();
+                });
+
+            Filters.Add(filter);
+        }
+
+        _suppressFilterUpdates = false;
+
+        ApplyFilter();
     }
 }
