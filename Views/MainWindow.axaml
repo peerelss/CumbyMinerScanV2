@@ -136,6 +136,8 @@
 
                     <Button Content="重启" Background="Lime" BorderBrush="Red" BorderThickness="1" Width="185"
                             Command="{Binding RebootMinerCommand}" />
+                   
+
 
                 </StackPanel>
                 <Border BorderBrush="Gray" BorderThickness="1" Padding="10">

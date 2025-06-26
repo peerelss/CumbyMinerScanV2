@@ -7,11 +7,12 @@ namespace CumbyMinerScanV2.Utils;
 using System;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
+using Newtonsoft.Json.Linq; // 安装 Newtonsoft.Json
 
 //给定一个ip判断这个ip是否有问题。首先判断这个ip是否在线。如果离线则返回ip,offline
 public class MinerHelper
 {
-    public static async Task<MinerDetail> IsMinerAvailable(string ip)
+    public static async Task<bool> IsMinerOnline(string ip)
     {
         if (string.IsNullOrWhiteSpace(ip))
         {
@@ -31,6 +32,13 @@ public class MinerHelper
         {
         }
 
+        return isOnline;
+    }
+
+    public static async Task<MinerDetail> IsMinerAvailable(string ip)
+    {
+        var isOnline = await IsMinerOnline(ip);
+
         if (!isOnline)
         {
             return new MinerDetail(ip, "offline", 0f, 0f, 0, LogHelper.ErrorOffline, "设备不在线");
@@ -43,11 +51,7 @@ public class MinerHelper
                     await HttpHelper.GetDigestProtectedResourceAsync($"http://{ip}/cgi-bin/stats.cgi", "root", "root",
                         "{}");
                 MinerBasicInfo info = MinerParser.ParseMinerInfo(json);
-                Console.WriteLine($"Rate5s: {info.Rate5s}");
-                Console.WriteLine($"RateAvg: {info.RateAvg}");
-                Console.WriteLine($"FanNum: {info.FanNum}");
-                Console.WriteLine($"Fans: {string.Join(", ", info.Fans)}");
-                Console.WriteLine($"ChainNum: {info.ChainNum}");
+
                 if (info.Rate5s > 0)
                 {
                     // 正常
@@ -94,5 +98,66 @@ public class MinerHelper
         }
 
         // 模拟获取矿机数据
+    }
+
+    public static async Task<MinerDetail> RebootMiner(MinerDetail minerDetail)
+    {
+        bool isOnline = await IsMinerOnline(minerDetail.Ip);
+        if (isOnline)
+        {
+            try
+            {
+                string result =
+                    await HttpHelper.GetDigestProtectedResourceAsync($"http://{minerDetail.Ip}/cgi-bin/reboot.cgi",
+                        "root", "root",
+                        "{}");
+                string[] results = result.Split(' ');
+                if (results.Length > 1 && int.Parse(results[1]) == 200)
+                {
+                    return new MinerDetail(minerDetail.Ip, minerDetail.Issue, minerDetail.HashRealTime,
+                        minerDetail.HashAverage, minerDetail.ElapsedTime, minerDetail.IssueDetail,
+                        "重启成功");
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        return new MinerDetail(minerDetail.Ip, minerDetail.Issue, minerDetail.HashRealTime,
+            minerDetail.HashAverage, minerDetail.ElapsedTime, minerDetail.IssueDetail,
+            "重启失败");
+        ;
+    }
+
+    public static async Task<MinerDetail> LightOnMiner(MinerDetail minerDetail)
+    {
+        bool isOnline = await IsMinerOnline(minerDetail.Ip);
+        if (isOnline)
+        {
+            try
+            {
+                string resultJSon =
+                    await HttpHelper.GetDigestProtectedResourceAsync($"http://{minerDetail.Ip}/cgi-bin/blink.cgi",
+                        "root", "root",
+                        HttpHelper._lightOnData);
+
+                var code = JObject.Parse(resultJSon)["code"]?.ToString();
+                if (code.Equals("B000"))
+                {
+                    return new MinerDetail(minerDetail.Ip, minerDetail.Issue, minerDetail.HashRealTime,
+                        minerDetail.HashAverage, minerDetail.ElapsedTime, minerDetail.IssueDetail,
+                        "点亮成功");
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        return new MinerDetail(minerDetail.Ip, minerDetail.Issue, minerDetail.HashRealTime,
+            minerDetail.HashAverage, minerDetail.ElapsedTime, minerDetail.IssueDetail,
+            "点亮失败");
+        ;
     }
 }

@@ -16,7 +16,7 @@ public class HttpHelper
     public static string _userPassword = "root";
     public static string _httpPre = "http://";
     public static string _stats = "/cgi-bin/stats.cgi";
-
+    public static string _lightOnData = "{\"blink\":true}";
     public static async Task<string> GetDigestProtectedResourceAsync(string url, string username, string password,
         string payload)
     {
@@ -53,4 +53,5 @@ public class HttpHelper
 
         return await response.Content.ReadAsStringAsync();
     }
+    
 }

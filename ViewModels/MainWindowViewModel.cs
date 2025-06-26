@@ -14,6 +14,9 @@ using System.Threading.Tasks;
 using CumbyMinerScanV2.Models;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
+using ReactiveUI;
+using System.Reactive.Concurrency;
+using Newtonsoft.Json.Linq;
 
 namespace CumbyMinerScanV2.ViewModels;
 
@@ -127,28 +130,59 @@ public class MainWindowViewModel : ViewModelBase
 
     private async void testUrl()
     {
-        string log =
-            await HttpHelper.GetDigestProtectedResourceAsync($"http://10.11.1.5/cgi-bin/log.cgi", "root", "root",
-                "{}");
-
-        var logResult = LogHelper.ParseLog(log);
-        Console.WriteLine(logResult[0]);
+        var ip = "10.11.2.162";
+        string resultJSon =
+            await HttpHelper.GetDigestProtectedResourceAsync($"http://{ip}/cgi-bin/blink.cgi",
+                "root", "root",
+                HttpHelper._lightOnData);
+        RxApp.MainThreadScheduler.Schedule(() =>
+        {
+            Console.Write(resultJSon);
+            MessageText = resultJSon;
+            try
+            {
+                var code = JObject.Parse(resultJSon)["code"]?.ToString();
+                MessageText = code == "B000" ? "light success" : "light failure";
+            }
+            catch
+            {
+                MessageText = "invalid response";
+            }
+        });
     }
 
     public MainWindowViewModel()
     {
         ButtonClickCommand = ReactiveCommand.CreateFromTask<string>(OnButtonClicked);
-        TestCommand = ReactiveCommand.CreateFromTask(async () =>
+        RebootMinerCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            if (FanIssue)
+            List<MinerDetail> resultMiner = new List<MinerDetail>();
+            foreach (var minerDetail in MinerDetails)
             {
-                Console.WriteLine("FanIssue");
+                resultMiner.Add(await MinerHelper.RebootMiner(minerDetail));
             }
-            else if (TempIssue)
+
+            MinerDetails.Clear();
+            foreach (var minerDetail in resultMiner)
             {
-                Console.WriteLine("TempIssue");
+                MinerDetails.Add(minerDetail);
             }
         });
+        LightMinerCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            List<MinerDetail> resultMiner = new List<MinerDetail>();
+            foreach (var minerDetail in MinerDetails)
+            {
+                resultMiner.Add(await MinerHelper.LightOnMiner(minerDetail));
+            }
+
+            MinerDetails.Clear();
+            foreach (var minerDetail in resultMiner)
+            {
+                MinerDetails.Add(minerDetail);
+            }
+        });
+        TestCommand = ReactiveCommand.CreateFromTask(async () => { testUrl(); });
         ExportCommand = ReactiveCommand.Create(async () =>
         {
             try
@@ -171,7 +205,6 @@ public class MainWindowViewModel : ViewModelBase
             }
         });
         // 使用方式
-        
     }
 
     private async Task OnButtonClicked(string buttonName)
@@ -199,18 +232,6 @@ public class MainWindowViewModel : ViewModelBase
             var argument = $"/select,\"{fullPath}\"";
             Process.Start("explorer.exe", argument);
         }
-    }
-
-    private IEnumerable<IObservable<bool>> GetFilterProperties()
-    {
-        yield return this.WhenAnyValue(x => x.ShowOK);
-        yield return this.WhenAnyValue(x => x.ShowOverheat);
-        yield return this.WhenAnyValue(x => x.ShowFanLost);
-        yield return this.WhenAnyValue(x => x.ShowNetIssue);
-        yield return this.WhenAnyValue(x => x.ShowOffline);
-        yield return this.WhenAnyValue(x => x.ShowPowerLost);
-        yield return this.WhenAnyValue(x => x.ShowHashBroad);
-        yield return this.WhenAnyValue(x => x.ShowUnknown);
     }
 
 
