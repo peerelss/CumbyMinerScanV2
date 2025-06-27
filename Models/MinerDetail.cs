@@ -1,4 +1,6 @@
-﻿namespace CumbyMinerScanV2.Models;
+﻿using System.Net;
+
+namespace CumbyMinerScanV2.Models;
 
 public class MinerDetail
 {
@@ -9,7 +11,8 @@ public class MinerDetail
     public double HashAverage { get; set; }
     public string IssueDetail { get; set; }
     public string IssueMemo { get; set; }
-
+    public IPAddress IPAddressValue =>
+        IPAddress.TryParse(Ip, out var addr) ? addr : IPAddress.None;
     public MinerDetail(string ip, string issue, double hashRealTime, double hashAverage, int elapsedTime,
         string issueDetail,
         string issueMemo)

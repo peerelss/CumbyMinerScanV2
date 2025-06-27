@@ -23,6 +23,21 @@ namespace CumbyMinerScanV2.ViewModels;
 public class MainWindowViewModel : ViewModelBase
 {
     private string _issueSummary;
+    private double _progress;
+
+    public double Progress
+    {
+        get => _progress;
+        set => this.RaiseAndSetIfChanged(ref _progress, value);
+    }
+
+    private bool _isLoading;
+
+    public bool IsLoading
+    {
+        get => _isLoading;
+        set => this.RaiseAndSetIfChanged(ref _isLoading, value);
+    }
 
     public string IssueSummary
     {
@@ -60,7 +75,7 @@ public class MainWindowViewModel : ViewModelBase
     public ICommand ButtonClickCommand { get; }
     public ICommand TestCommand { get; }
     public ICommand ExportCommand { get; }
-    public ICommand UpdateCommand { get; }
+    public ICommand OrderByIpCommand { get; }
     public ICommand LightMinerCommand { get; }
     public ICommand RebootMinerCommand { get; }
     private bool _showOK;
@@ -154,6 +169,7 @@ public class MainWindowViewModel : ViewModelBase
     public MainWindowViewModel()
     {
         ButtonClickCommand = ReactiveCommand.CreateFromTask<string>(OnButtonClicked);
+        OrderByIpCommand = ReactiveCommand.Create(() => { });
         RebootMinerCommand = ReactiveCommand.CreateFromTask(async () =>
         {
             List<MinerDetail> resultMiner = new List<MinerDetail>();
@@ -210,7 +226,13 @@ public class MainWindowViewModel : ViewModelBase
     private async Task OnButtonClicked(string buttonName)
     {
         MessageText = "开始扫描";
+        IsLoading = true;
+        Progress = 0;
+
+
         var ips = IpRangeHelper.GetIpRanges(buttonName);
+        int total = ips.Count;
+        int done = 0;
         OriginMinerData.Clear();
         MinerDetails.Clear();
         foreach (var ip in ips)
@@ -218,8 +240,11 @@ public class MainWindowViewModel : ViewModelBase
             var detail = await MinerHelper.IsMinerAvailable(ip);
             OriginMinerData.Add(detail);
             MinerDetails.Add(detail);
+            done++;
+            Progress = (double)done / total;
         }
 
+        IsLoading = false;
         UpdateIssueStatistics();
     }
 
