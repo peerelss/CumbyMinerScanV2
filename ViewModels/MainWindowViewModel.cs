@@ -17,6 +17,11 @@ using MsBox.Avalonia.Enums;
 using ReactiveUI;
 using System.Reactive.Concurrency;
 using Newtonsoft.Json.Linq;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Avalonia;
+using LiveChartsCore.SkiaSharpView.Painting;
+using SkiaSharp;
 
 namespace CumbyMinerScanV2.ViewModels;
 
@@ -24,7 +29,7 @@ public class MainWindowViewModel : ViewModelBase
 {
     private string _issueSummary;
     private double _progress;
-
+    public ObservableCollection<ISeries> IssueSeries { get; set; } = new();
     public double Progress
     {
         get => _progress;
@@ -284,7 +289,21 @@ public class MainWindowViewModel : ViewModelBase
             .GroupBy(m => m.IssueDetail)
             .Select(g => new { Issue = g.Key, Count = g.Count() })
             .ToList();
+        IssueSeries.Clear();
 
+        foreach (var item in grouped)
+        {
+            IssueSeries.Add(new PieSeries<int>
+            {
+                Name = item.Issue,
+                Values = new[] { item.Count },
+                DataLabelsSize = 16,
+                DataLabelsPaint = new SolidColorPaint(SKColors.Black),
+                DataLabelsPosition = LiveChartsCore.Measure.PolarLabelsPosition.Middle
+            });
+        }
+        
+        
         Filters.Clear();
         foreach (var group in grouped)
         {

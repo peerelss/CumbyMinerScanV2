@@ -6,6 +6,7 @@
         mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="650"
         x:Class="CumbyMinerScanV2.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
+        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
         Icon="/Assets/avalonia-logo.ico"
         Title="CumbyMinerScanV2">
 
@@ -153,6 +154,12 @@
 
                     </StackPanel>
                 </Border>
+                <lvc:PieChart Series="{Binding IssueSeries}"
+                              LegendPosition="Right"
+                              InitialRotation="0"
+                              Height="300"
+                              Width="700"
+                              Margin="10"/>
             </StackPanel>
             <ProgressBar Minimum="0" Maximum="1" Height="10" Margin="10"
                          Value="{Binding Progress}"
